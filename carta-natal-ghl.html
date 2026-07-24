@@ -377,8 +377,25 @@ function drawChart(data) {
   el('rect', { x:0, y:0, width:700, height:700, fill:'#f2e0d2' });
   // Banda de signos: plum
   el('circle', { cx:CX, cy:CY, r:R_OUTER, fill:'#503852', stroke:'#3d2a3f', 'stroke-width':1.5 });
-  // Franja de planetas: crema
-  el('circle', { cx:CX, cy:CY, r:R_SIGN_IN, fill:'#f2e0d2' });
+
+  // ── House sectors: desde el centro hasta el borde de la banda de signos ──
+  for (let i = 0; i < data.houses.length; i++) {
+    const h = data.houses[i];
+    const next = data.houses[(i+1) % 12];
+    const aS = chartAngle(h.abs_pos, ascAbs);
+    const aE = chartAngle(next.abs_pos, ascAbs);
+    const fill = (h.house % 2 === 1) ? '#d4d6c0' : '#dddcb3';
+    const ccw = (aS - aE + 360) % 360;
+    const lf = ccw > 180 ? 1 : 0;
+    const [o1x,o1y] = polar(R_SIGN_IN-1, aS);
+    const [o2x,o2y] = polar(R_SIGN_IN-1, aE);
+    const [i1x,i1y] = polar(R_HOUSE_IN+1, aE);
+    const [i2x,i2y] = polar(R_HOUSE_IN+1, aS);
+    el('path', {
+      d:`M ${o1x} ${o1y} A ${R_SIGN_IN-1} ${R_SIGN_IN-1} 0 ${lf} 0 ${o2x} ${o2y} L ${i1x} ${i1y} A ${R_HOUSE_IN+1} ${R_HOUSE_IN+1} 0 ${lf} 1 ${i2x} ${i2y} Z`,
+      fill,
+    });
+  }
 
   for (let i = 0; i < 12; i++) {
     const aStart = chartAngle(i * 30, ascAbs);
@@ -404,30 +421,11 @@ function drawChart(data) {
 
   el('circle', { cx:CX, cy:CY, r:R_SIGN_IN, fill:'none', stroke:'#8a6070', 'stroke-width':0.8 });
   el('circle', { cx:CX, cy:CY, r:R_PLANET_IN, fill:'none', stroke:'#8a6070', 'stroke-width':0.8 });
-  // ── House sectors: alternating odd/even fills ──
-  for (let i = 0; i < data.houses.length; i++) {
-    const h = data.houses[i];
-    const next = data.houses[(i+1) % 12];
-    const aS = chartAngle(h.abs_pos, ascAbs);
-    const aE = chartAngle(next.abs_pos, ascAbs);
-    const fill = (h.house % 2 === 1) ? '#d4d6c0' : '#b6b79f';
-    const ccw = (aS - aE + 360) % 360;
-    const lf = ccw > 180 ? 1 : 0;
-    const [o1x,o1y] = polar(R_PLANET_IN-1, aS);
-    const [o2x,o2y] = polar(R_PLANET_IN-1, aE);
-    const [i1x,i1y] = polar(R_HOUSE_IN+1, aE);
-    const [i2x,i2y] = polar(R_HOUSE_IN+1, aS);
-    el('path', {
-      d:`M ${o1x} ${o1y} A ${R_PLANET_IN-1} ${R_PLANET_IN-1} 0 ${lf} 0 ${o2x} ${o2y} L ${i1x} ${i1y} A ${R_HOUSE_IN+1} ${R_HOUSE_IN+1} 0 ${lf} 1 ${i2x} ${i2y} Z`,
-      fill,
-    });
-  }
-
   for (const house of data.houses) {
     const ang = chartAngle(house.abs_pos, ascAbs);
     const isAngular = [1,4,7,10].includes(house.house);
     const [hx1,hy1] = polar(R_HOUSE_IN, ang);
-    const [hx2,hy2] = polar(R_PLANET_IN, ang);
+    const [hx2,hy2] = polar(R_SIGN_IN, ang);
     el('line', {
       x1:hx1, y1:hy1, x2:hx2, y2:hy2,
       stroke: isAngular ? '#5a2030' : '#b0909a',
@@ -461,7 +459,7 @@ function drawChart(data) {
   // ── Centro ──
   el('circle', { cx:CX, cy:CY, r:R_HOUSE_IN - 1, fill:'#f1dfd2' });
 
-  const aspectGroup = el('g', { opacity:'0.55' });
+  const aspectGroup = el('g', { opacity:'0.75' });
   for (const asp of data.aspects) {
     const aspName = asp.aspect.toLowerCase();
     if (!ASPECT_COLORS[aspName]) continue;
