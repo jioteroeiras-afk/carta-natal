@@ -491,6 +491,7 @@ function drawChart(data) {
   el('circle', { cx:CX, cy:CY, r:R_HOUSE_IN - 1, fill:'#f1dfd2' });
 
   // ── Aspect lines (inside house inner circle) ──
+  console.log('[aspectos] total recibidos:', data.aspects?.length, data.aspects?.slice(0,3));
   const aspectGroup = el('g', { opacity:'0.75' });
   for (const asp of data.aspects) {
     const aspName = asp.aspect.toLowerCase();
