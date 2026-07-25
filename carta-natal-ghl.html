@@ -182,7 +182,7 @@
   #cn-app .aspect-table td { width: 40px; height: 16px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 14px; }
   #cn-app .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 14px; padding: 0 4px; }
   #cn-app .aspect-table .at-cell { background: #f7ebe4; }
-  #cn-app .aspect-table .at-empty { background: #f2e0d2; }
+  #cn-app .aspect-table .at-empty { background: #f7ebe4; }
 
   /* ── Elements / modality table ── */
   #cn-app #elements-wrap { margin-top: 20px; width: 100%; }
@@ -595,7 +595,7 @@ const MODALITY = {
   Taurus:'fixed',   Leo:'fixed',   Scorpio:'fixed',   Aquarius:'fixed',
   Gemini:'mutable', Virgo:'mutable', Sagittarius:'mutable', Pisces:'mutable',
 };
-const DAYS_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const DAYS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const HOUSE_ORDINALS = {
   First:1, Second:2, Third:3, Fourth:4, Fifth:5, Sixth:6,
   Seventh:7, Eighth:8, Ninth:9, Tenth:10, Eleventh:11, Twelfth:12,
@@ -763,14 +763,15 @@ document.getElementById('natal-form').addEventListener('submit', async (e) => {
     const data = await resp.json();
 
     document.getElementById('chart-title').textContent = name.toUpperCase();
+    const dateFormatted = `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`;
     document.getElementById('chart-subtitle').textContent =
-      `${dateVal} · ${timeVal} · ${city} · ASC ${SIGN_NAMES_ES[signIndex(data.ascendant.sign)] || '?'} ${Math.floor(data.ascendant.position)}°`;
+      `${dateFormatted} · ${timeVal} · ${city} · ASC ${SIGN_NAMES_ES[signIndex(data.ascendant.sign)] || '?'} ${Math.floor(data.ascendant.position)}°`;
 
     const dayOfWeek = DAYS_ES[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
 
     drawChart(data);
     drawAspectTable(data);
-    drawChartInfo(data, name, dateVal, dayOfWeek);
+    drawChartInfo(data, name, dateFormatted, dayOfWeek);
     drawElementsTable(data);
     chartWrap.style.display = 'block';
     chartWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
