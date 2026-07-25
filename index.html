@@ -175,11 +175,13 @@
 
   /* ── Aspect table ── */
   #aspect-table-wrap { margin-top: 20px; overflow-x: auto; }
-  .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; width: 100%; }
-  .aspect-table td { width: 28px; height: 28px; text-align: center; vertical-align: middle; border: 1px solid rgba(80,56,82,0.1); font-size: 13px; }
+  .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; }
+  .aspect-table td { width: 28px; height: 28px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 13px; }
   .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 13px; padding: 2px 4px; }
-  .aspect-table .at-cell { background: #fdf7f3; }
+  .aspect-table .at-cell { background: #f7ebe4; }
   .aspect-table .at-empty { background: #f2e0d2; }
+  .aspect-table .at-legend { border: none; background: transparent; text-align: left; padding: 2px 10px; font-size: 11px; white-space: nowrap; font-weight: 600; }
+  .aspect-table .at-legend-empty { border: none; background: transparent; }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -400,7 +402,7 @@ function drawChart(data) {
     const next = data.houses[(i+1) % 12];
     const aS = chartAngle(h.abs_pos, ascAbs);
     const aE = chartAngle(next.abs_pos, ascAbs);
-    const fill = (h.house % 2 === 1) ? '#d4d6c0' : '#dddcb3';
+    const fill = (h.house % 2 === 1) ? '#d4d6c0' : '#c6c4ab';
     const ccw = (aS - aE + 360) % 360;
     const lf = ccw > 180 ? 1 : 0;
     const [o1x,o1y] = polar(R_SIGN_IN-1, aS);
@@ -585,40 +587,6 @@ function drawChart(data) {
     t.textContent = a.label;
   }
 
-  // ── Center: name + date ──
-  const nameT = el('text', {
-    x:CX, y:CY - 9,
-    'text-anchor':'middle', 'dominant-baseline':'central',
-    'font-size':'13', fill:'#2e1228', 'letter-spacing':'2.5',
-    'font-family':'Helvetica, Arial, sans-serif', 'font-weight':'600',
-  });
-  nameT.textContent = data.name.toUpperCase();
-
-  const dateT = el('text', {
-    x:CX, y:CY + 9,
-    'text-anchor':'middle', 'dominant-baseline':'central',
-    'font-size':'8.5', fill:'#8a6070',
-    'font-family':'Helvetica, Arial, sans-serif',
-  });
-  dateT.textContent = data.datetime;
-
-  // ── Legend ──
-  const legendItems = [
-    { label:'Conjunción', color:'#c8a000', dash:'' },
-    { label:'Oposición',  color:'#991111', dash:'5,3' },
-    { label:'Trígono',    color:'#4466cc', dash:'' },
-    { label:'Cuadratura', color:'#cc2222', dash:'5,3' },
-    { label:'Sextil',     color:'#228844', dash:'3,3' },
-  ];
-  let lx = 20, ly = 672;
-  for (const item of legendItems) {
-    el('line', { x1:lx, y1:ly, x2:lx+18, y2:ly,
-      stroke:item.color, 'stroke-width':1.5, 'stroke-dasharray':item.dash });
-    const lt = el('text', { x:lx+22, y:ly, 'dominant-baseline':'central',
-      'font-size':'8', fill:'#8a6070', 'font-family':'Helvetica' });
-    lt.textContent = item.label;
-    lx += 108;
-  }
 }
 
 // Darken element colors slightly for legibility on the light tinted band
@@ -653,16 +621,22 @@ function drawAspectTable(data) {
     aspMap[key] = asp;
   }
 
-  // Table: rows = planet 1..N-1, cols = planet 0..row-1 (lower triangle)
-  // Bottom row = column headers (planet 0..N-2)
+  const legendItems = [
+    { sym:'☌', label:'Conjunción', color:'#c8a000' },
+    { sym:'☍', label:'Oposición',  color:'#991111' },
+    { sym:'△', label:'Trígono',    color:'#4466cc' },
+    { sym:'□', label:'Cuadratura', color:'#cc2222' },
+    { sym:'⚹', label:'Sextil',     color:'#228844' },
+  ];
+
+  // Triangular table: rows = planets[1..N-1], cols = planets[0..i-1]
+  // Upper-right empty area carries the legend (first 5 rows)
   let html = '<table class="aspect-table"><tbody>';
 
   for (let i = 1; i < N; i++) {
     const p1 = planets[i];
     html += '<tr>';
-    // Row header
     html += `<td class="at-label" title="${PLANET_NAMES_ES[p1.name]||p1.name}">${PLANET_UNICODE[p1.name]||p1.name[0]}</td>`;
-    // Cells
     for (let j = 0; j < i; j++) {
       const p2 = planets[j];
       const key = [p1.name, p2.name].sort().join('|');
@@ -677,12 +651,21 @@ function drawAspectTable(data) {
         html += '<td class="at-empty"></td>';
       }
     }
+    // Upper-right empty area: N-1-i cells — legend goes here for first 5 rows
+    const emptyCount = N - 1 - i;
+    const li = i - 1;
+    if (li < legendItems.length && emptyCount > 0) {
+      const leg = legendItems[li];
+      html += `<td class="at-legend" colspan="${emptyCount}" style="color:${leg.color}">${leg.sym}&nbsp;&nbsp;${leg.label}</td>`;
+    } else if (emptyCount > 0) {
+      html += `<td class="at-legend-empty" colspan="${emptyCount}"></td>`;
+    }
     html += '</tr>';
   }
 
-  // Column headers row
+  // Bottom column-header row
   html += '<tr><td class="at-label"></td>';
-  for (let j = 0; j < N-1; j++) {
+  for (let j = 0; j < N - 1; j++) {
     const p = planets[j];
     html += `<td class="at-label" title="${PLANET_NAMES_ES[p.name]||p.name}">${PLANET_UNICODE[p.name]||p.name[0]}</td>`;
   }

@@ -170,11 +170,13 @@
 
   /* ── Aspect table ── */
   #cn-app #aspect-table-wrap { margin-top: 20px; overflow-x: auto; }
-  #cn-app .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; width: 100%; }
-  #cn-app .aspect-table td { width: 28px; height: 28px; text-align: center; vertical-align: middle; border: 1px solid rgba(80,56,82,0.1); font-size: 13px; }
+  #cn-app .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; }
+  #cn-app .aspect-table td { width: 28px; height: 28px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 13px; }
   #cn-app .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 13px; padding: 2px 4px; }
-  #cn-app .aspect-table .at-cell { background: #fdf7f3; }
+  #cn-app .aspect-table .at-cell { background: #f7ebe4; }
   #cn-app .aspect-table .at-empty { background: #f2e0d2; }
+  #cn-app .aspect-table .at-legend { border: none; background: transparent; text-align: left; padding: 2px 10px; font-size: 11px; white-space: nowrap; font-weight: 600; }
+  #cn-app .aspect-table .at-legend-empty { border: none; background: transparent; }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -384,7 +386,7 @@ function drawChart(data) {
     const next = data.houses[(i+1) % 12];
     const aS = chartAngle(h.abs_pos, ascAbs);
     const aE = chartAngle(next.abs_pos, ascAbs);
-    const fill = (h.house % 2 === 1) ? '#d4d6c0' : '#dddcb3';
+    const fill = (h.house % 2 === 1) ? '#d4d6c0' : '#c6c4ab';
     const ccw = (aS - aE + 360) % 360;
     const lf = ccw > 180 ? 1 : 0;
     const [o1x,o1y] = polar(R_SIGN_IN-1, aS);
@@ -546,38 +548,6 @@ function drawChart(data) {
     t.textContent = a.label;
   }
 
-  const nameT = el('text', {
-    x:CX, y:CY - 9,
-    'text-anchor':'middle', 'dominant-baseline':'central',
-    'font-size':'13', fill:'#2e1228', 'letter-spacing':'2.5',
-    'font-family':'Helvetica, Arial, sans-serif', 'font-weight':'600',
-  });
-  nameT.textContent = data.name.toUpperCase();
-
-  const dateT = el('text', {
-    x:CX, y:CY + 9,
-    'text-anchor':'middle', 'dominant-baseline':'central',
-    'font-size':'8.5', fill:'#8a6070',
-    'font-family':'Helvetica, Arial, sans-serif',
-  });
-  dateT.textContent = data.datetime;
-
-  const legendItems = [
-    { label:'Conjunción', color:'#c8a000', dash:'' },
-    { label:'Oposición',  color:'#991111', dash:'5,3' },
-    { label:'Trígono',    color:'#4466cc', dash:'' },
-    { label:'Cuadratura', color:'#cc2222', dash:'5,3' },
-    { label:'Sextil',     color:'#228844', dash:'3,3' },
-  ];
-  let lx = 20, ly = 672;
-  for (const item of legendItems) {
-    el('line', { x1:lx, y1:ly, x2:lx+18, y2:ly,
-      stroke:item.color, 'stroke-width':1.5, 'stroke-dasharray':item.dash });
-    const lt = el('text', { x:lx+22, y:ly, 'dominant-baseline':'central',
-      'font-size':'8', fill:'#8a6070', 'font-family':'Helvetica' });
-    lt.textContent = item.label;
-    lx += 108;
-  }
 }
 
 function darkenColor(hex) {
@@ -610,6 +580,14 @@ function drawAspectTable(data) {
     aspMap[key] = asp;
   }
 
+  const legendItems = [
+    { sym:'☌', label:'Conjunción', color:'#c8a000' },
+    { sym:'☍', label:'Oposición',  color:'#991111' },
+    { sym:'△', label:'Trígono',    color:'#4466cc' },
+    { sym:'□', label:'Cuadratura', color:'#cc2222' },
+    { sym:'⚹', label:'Sextil',     color:'#228844' },
+  ];
+
   let html = '<table class="aspect-table"><tbody>';
 
   for (let i = 1; i < N; i++) {
@@ -630,11 +608,19 @@ function drawAspectTable(data) {
         html += '<td class="at-empty"></td>';
       }
     }
+    const emptyCount = N - 1 - i;
+    const li = i - 1;
+    if (li < legendItems.length && emptyCount > 0) {
+      const leg = legendItems[li];
+      html += `<td class="at-legend" colspan="${emptyCount}" style="color:${leg.color}">${leg.sym}&nbsp;&nbsp;${leg.label}</td>`;
+    } else if (emptyCount > 0) {
+      html += `<td class="at-legend-empty" colspan="${emptyCount}"></td>`;
+    }
     html += '</tr>';
   }
 
   html += '<tr><td class="at-label"></td>';
-  for (let j = 0; j < N-1; j++) {
+  for (let j = 0; j < N - 1; j++) {
     const p = planets[j];
     html += `<td class="at-label" title="${PLANET_NAMES_ES[p.name]||p.name}">${PLANET_UNICODE[p.name]||p.name[0]}</td>`;
   }
