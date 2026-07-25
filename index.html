@@ -176,7 +176,7 @@
   /* ── Aspect table ── */
   #aspect-table-wrap { margin-top: 20px; display: flex; justify-content: center; }
   .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; }
-  .aspect-table td { width: 28px; height: 28px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 13px; }
+  .aspect-table td { width: 36px; height: 36px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 16px; }
   .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 13px; padding: 2px 4px; }
   .aspect-table .at-cell { background: #f7ebe4; }
   .aspect-table .at-empty { background: #f2e0d2; }
@@ -417,11 +417,6 @@ function drawChart(data) {
   for (let i = 0; i < 12; i++) {
     const aStart = chartAngle(i * 30, ascAbs);
 
-    // Divisor en la franja de planetas
-    const [lx1,ly1] = polar(R_PLANET_IN, aStart);
-    const [lx2,ly2] = polar(R_SIGN_IN, aStart);
-    el('line', { x1:lx1,y1:ly1, x2:lx2,y2:ly2, stroke:'#8a6070', 'stroke-width':0.8 });
-
     // Divisor en la banda de signos (claro sobre plum)
     const [dx1,dy1] = polar(R_SIGN_IN, aStart);
     const [dx2,dy2] = polar(R_OUTER, aStart);
@@ -563,10 +558,12 @@ function drawChart(data) {
   // ── ASC / DSC / MC / IC axis lines & labels ──
   const ascDeg = Math.floor(data.ascendant.position);
   const ascSym = SIGN_SYMBOLS[signIndex(data.ascendant.sign)] || '';
+  const mcDeg  = Math.floor(data.mc.position);
+  const mcSym  = SIGN_SYMBOLS[signIndex(data.mc.sign)] || '';
   const axes = [
     { label:'ASC', sub:`${ascDeg}° ${ascSym}`, abs:ascAbs,                   color:'#5a2030', bold:true },
     { label:'DSC', sub:null, abs:(ascAbs+180)%360,                            color:'#5a2030', bold:true },
-    { label:'MC',  sub:null, abs:data.mc.abs_pos,                             color:'#2a3a5a', bold:true },
+    { label:'MC',  sub:`${mcDeg}° ${mcSym}`,   abs:data.mc.abs_pos,          color:'#2a3a5a', bold:true },
     { label:'IC',  sub:null, abs:(data.mc.abs_pos+180)%360,                   color:'#2a3a5a', bold:true },
   ];
   for (const a of axes) {
