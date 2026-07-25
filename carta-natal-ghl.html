@@ -168,13 +168,30 @@
   }
   #cn-app #download-btn:hover { background: #503852; color: #fff; }
 
+  /* ── Chart footer ── */
+  #cn-app #chart-footer { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: 20px; gap: 24px; }
+  #cn-app #aspect-table-wrap { display: flex; }
+  #cn-app #chart-info { text-align: right; font-family: Helvetica, Arial, sans-serif; flex-shrink: 0; }
+  #cn-app .ci-label { font-size: 0.65rem; letter-spacing: 0.12em; color: #7a5f6a; text-transform: uppercase; margin-top: 10px; }
+  #cn-app .ci-label:first-child { margin-top: 0; }
+  #cn-app .ci-value { font-size: 0.9rem; color: #2e1228; font-weight: 600; margin-top: 2px; }
+  #cn-app .ci-type { font-size: 0.75rem; font-weight: 700; color: #503852; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 12px; }
+
   /* ── Aspect table ── */
-  #cn-app #aspect-table-wrap { margin-top: 20px; display: flex; justify-content: center; }
   #cn-app .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; }
   #cn-app .aspect-table td { width: 40px; height: 16px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 14px; }
   #cn-app .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 14px; padding: 0 4px; }
   #cn-app .aspect-table .at-cell { background: #f7ebe4; }
   #cn-app .aspect-table .at-empty { background: #f2e0d2; }
+
+  /* ── Elements / modality table ── */
+  #cn-app #elements-wrap { margin-top: 20px; width: 100%; }
+  #cn-app .em-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; width: 100%; }
+  #cn-app .em-table th { font-size: 0.6rem; letter-spacing: 0.1em; color: #7a5f6a; text-transform: uppercase; font-weight: 700; padding: 4px 8px; border: none; background: transparent; }
+  #cn-app .em-table th:first-child { text-align: left; min-width: 52px; }
+  #cn-app .em-table td { border: 1.5px solid rgba(80,56,82,0.15); vertical-align: middle; padding: 6px 10px; font-size: 15px; letter-spacing: 0.04em; height: 36px; }
+  #cn-app .em-table .em-filled { background: #f7ebe4; }
+  #cn-app .em-table .em-empty  { background: #f2e0d2; }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -183,6 +200,8 @@
     #cn-app h1 { font-size: 36px; }
     #cn-app .hero-desc { font-size: 15px; }
     #cn-app .row { flex-direction: column; gap: 14px; }
+    #cn-app #chart-footer { flex-direction: column; align-items: flex-start; }
+    #cn-app #chart-info { text-align: left; }
   }
 </style>
 
@@ -224,7 +243,11 @@
     <div id="chart-title"></div>
     <div id="chart-subtitle"></div>
     <svg id="natal-svg" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg"></svg>
-    <div id="aspect-table-wrap"></div>
+    <div id="chart-footer">
+      <div id="aspect-table-wrap"></div>
+      <div id="chart-info"></div>
+    </div>
+    <div id="elements-wrap"></div>
     <button id="download-btn">Descargar carta</button>
   </div>
 </div>
@@ -567,6 +590,76 @@ function darkenColor(hex) {
   return map[hex] || hex;
 }
 
+const MODALITY = {
+  Aries:'cardinal', Cancer:'cardinal', Libra:'cardinal', Capricorn:'cardinal',
+  Taurus:'fixed',   Leo:'fixed',   Scorpio:'fixed',   Aquarius:'fixed',
+  Gemini:'mutable', Virgo:'mutable', Sagittarius:'mutable', Pisces:'mutable',
+};
+const DAYS_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const HOUSE_ORDINALS = {
+  First:1, Second:2, Third:3, Fourth:4, Fifth:5, Sixth:6,
+  Seventh:7, Eighth:8, Ninth:9, Tenth:10, Eleventh:11, Twelfth:12,
+};
+
+function drawChartInfo(data, name, dateVal, dayOfWeek) {
+  const wrap = document.getElementById('chart-info');
+  if (!wrap) return;
+  const sun = data.planets.find(p => p.name === 'Sun');
+  let chartType = '';
+  if (sun) {
+    const ordinal = (sun.house || '').replace('_House', '');
+    const hNum = HOUSE_ORDINALS[ordinal] || 0;
+    chartType = hNum >= 7 ? 'CARTA DIURNA' : 'CARTA NOCTURNA';
+  }
+  wrap.innerHTML = `
+    <div class="ci-label">NOMBRE</div>
+    <div class="ci-value">${name}</div>
+    <div class="ci-label">FECHA</div>
+    <div class="ci-value">${dayOfWeek}, ${dateVal}</div>
+    ${chartType ? `<div class="ci-type">${chartType}</div>` : ''}
+  `;
+}
+
+function drawElementsTable(data) {
+  const wrap = document.getElementById('elements-wrap');
+  if (!wrap) return;
+  const points = data.planets.map(p => ({
+    sym: PLANET_UNICODE[p.name] || p.name[0],
+    sign: SIGNS[signIndex(p.sign)] || '',
+  }));
+  const ascFull = SIGNS[signIndex(data.ascendant.sign)] || '';
+  const mcFull  = SIGNS[signIndex(data.mc.sign)] || '';
+  if (ascFull) points.push({ sym: 'AC', sign: ascFull });
+  if (mcFull)  points.push({ sym: 'MC', sign: mcFull });
+
+  const elems   = ['fire','earth','air','water'];
+  const modals  = ['cardinal','fixed','mutable'];
+  const eLabels = { fire:'FUEGO', earth:'TIERRA', air:'AIRE', water:'AGUA' };
+  const mLabels = { cardinal:'CARDINAL', fixed:'FIJO', mutable:'MUTABLE' };
+
+  let html = '<table class="em-table"><thead><tr><th></th>';
+  for (const m of modals) html += `<th>${mLabels[m]}</th>`;
+  html += '</tr></thead><tbody>';
+
+  for (const elem of elems) {
+    const col = darkenColor(ELEMENT_COLORS[elem] || '#2e1228');
+    html += `<tr><th>${eLabels[elem]}</th>`;
+    for (const mod of modals) {
+      const cell = points.filter(p => ELEMENTS[p.sign] === elem && MODALITY[p.sign] === mod);
+      if (cell.length) {
+        const syms = cell.map(p => `<span style="color:${col};font-weight:700">${p.sym}</span>`).join(' ');
+        html += `<td class="em-filled">${syms}</td>`;
+      } else {
+        html += '<td class="em-empty"></td>';
+      }
+    }
+    html += '</tr>';
+  }
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
 // ─── Aspect table ─────────────────────────────────────────────────────────────
 const PLANET_UNICODE = {
   Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂',
@@ -673,8 +766,12 @@ document.getElementById('natal-form').addEventListener('submit', async (e) => {
     document.getElementById('chart-subtitle').textContent =
       `${dateVal} · ${timeVal} · ${city} · ASC ${SIGN_NAMES_ES[signIndex(data.ascendant.sign)] || '?'} ${Math.floor(data.ascendant.position)}°`;
 
+    const dayOfWeek = DAYS_ES[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
+
     drawChart(data);
     drawAspectTable(data);
+    drawChartInfo(data, name, dateVal, dayOfWeek);
+    drawElementsTable(data);
     chartWrap.style.display = 'block';
     chartWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
