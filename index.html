@@ -174,14 +174,12 @@
   #download-btn:hover { background: #503852; color: #fff; }
 
   /* ── Aspect table ── */
-  #aspect-table-wrap { margin-top: 20px; overflow-x: auto; }
+  #aspect-table-wrap { margin-top: 20px; display: flex; justify-content: center; }
   .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; }
   .aspect-table td { width: 28px; height: 28px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 13px; }
   .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 13px; padding: 2px 4px; }
   .aspect-table .at-cell { background: #f7ebe4; }
   .aspect-table .at-empty { background: #f2e0d2; }
-  .aspect-table .at-legend { border: none; background: transparent; text-align: left; padding: 2px 10px; font-size: 11px; white-space: nowrap; font-weight: 600; }
-  .aspect-table .at-legend-empty { border: none; background: transparent; }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -563,28 +561,37 @@ function drawChart(data) {
   }
 
   // ── ASC / DSC / MC / IC axis lines & labels ──
+  const ascDeg = Math.floor(data.ascendant.position);
+  const ascSym = SIGN_SYMBOLS[signIndex(data.ascendant.sign)] || '';
   const axes = [
-    { label:'ASC', abs:ascAbs,                       color:'#5a2030', bold:true },
-    { label:'DSC', abs:(ascAbs+180)%360,              color:'#5a2030', bold:true },
-    { label:'MC',  abs:data.mc.abs_pos,               color:'#2a3a5a', bold:true },
-    { label:'IC',  abs:(data.mc.abs_pos+180)%360,     color:'#2a3a5a', bold:true },
+    { label:'ASC', sub:`${ascDeg}° ${ascSym}`, abs:ascAbs,                   color:'#5a2030', bold:true },
+    { label:'DSC', sub:null, abs:(ascAbs+180)%360,                            color:'#5a2030', bold:true },
+    { label:'MC',  sub:null, abs:data.mc.abs_pos,                             color:'#2a3a5a', bold:true },
+    { label:'IC',  sub:null, abs:(data.mc.abs_pos+180)%360,                   color:'#2a3a5a', bold:true },
   ];
   for (const a of axes) {
     const ang = chartAngle(a.abs, ascAbs);
-    // Axis line through full chart
     const [ax1,ay1] = polar(R_OUTER + 2, ang);
     const [ax2,ay2] = polar(R_OUTER + 2, (ang+180)%360);
     el('line', { x1:ax1,y1:ay1, x2:ax2,y2:ay2,
       stroke:a.color, 'stroke-width':1.2, opacity:'0.5' });
-    // Label
     const [lx,ly] = polar(R_OUTER + 20, ang);
     const t = el('text', {
       x:lx, y:ly,
-      'text-anchor':'middle', 'dominant-baseline':'central',
+      'text-anchor':'middle',
       'font-size':'11', fill:a.color, 'font-weight': a.bold ? '700' : '400',
       'font-family':'Helvetica, Arial, sans-serif',
     });
-    t.textContent = a.label;
+    if (a.sub) {
+      const t1 = document.createElementNS('http://www.w3.org/2000/svg','tspan');
+      t1.setAttribute('x', lx); t1.setAttribute('dy', '-6'); t1.textContent = a.label;
+      const t2 = document.createElementNS('http://www.w3.org/2000/svg','tspan');
+      t2.setAttribute('x', lx); t2.setAttribute('dy', '13'); t2.setAttribute('font-size','9'); t2.textContent = a.sub;
+      t.appendChild(t1); t.appendChild(t2);
+    } else {
+      t.setAttribute('dominant-baseline','central');
+      t.textContent = a.label;
+    }
   }
 
 }
@@ -621,16 +628,6 @@ function drawAspectTable(data) {
     aspMap[key] = asp;
   }
 
-  const legendItems = [
-    { sym:'☌', label:'Conjunción', color:'#c8a000' },
-    { sym:'☍', label:'Oposición',  color:'#991111' },
-    { sym:'△', label:'Trígono',    color:'#4466cc' },
-    { sym:'□', label:'Cuadratura', color:'#cc2222' },
-    { sym:'⚹', label:'Sextil',     color:'#228844' },
-  ];
-
-  // Triangular table: rows = planets[1..N-1], cols = planets[0..i-1]
-  // Upper-right empty area carries the legend (first 5 rows)
   let html = '<table class="aspect-table"><tbody>';
 
   for (let i = 1; i < N; i++) {
@@ -650,15 +647,6 @@ function drawAspectTable(data) {
       } else {
         html += '<td class="at-empty"></td>';
       }
-    }
-    // Upper-right empty area: N-1-i cells — legend goes here for first 5 rows
-    const emptyCount = N - 1 - i;
-    const li = i - 1;
-    if (li < legendItems.length && emptyCount > 0) {
-      const leg = legendItems[li];
-      html += `<td class="at-legend" colspan="${emptyCount}" style="color:${leg.color}">${leg.sym}&nbsp;&nbsp;${leg.label}</td>`;
-    } else if (emptyCount > 0) {
-      html += `<td class="at-legend-empty" colspan="${emptyCount}"></td>`;
     }
     html += '</tr>';
   }
