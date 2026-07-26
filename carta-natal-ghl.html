@@ -12,15 +12,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 80px 32px 64px;
+    padding: 96px 48px 80px;
   }
 
   /* ── Two-column hero ── */
   #cn-app .hero {
     width: 100%;
-    max-width: 1300px;
+    max-width: 1700px;
     display: flex;
-    gap: 72px;
+    gap: 80px;
     align-items: center;
     margin-bottom: 64px;
   }
@@ -28,8 +28,8 @@
   #cn-app .hero-right { flex: 1; min-width: 0; }
 
   #cn-app .kicker {
-    font-size: 14px;
-    letter-spacing: 3.5px;
+    font-size: clamp(14px, 1.1vw, 18px);
+    letter-spacing: 4px;
     text-transform: uppercase;
     color: #523852;
     font-weight: 700;
@@ -38,7 +38,7 @@
   }
   #cn-app h1 {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 64px;
+    font-size: clamp(64px, 5.5vw, 88px);
     color: #523852;
     line-height: 1.1;
     margin-bottom: 22px;
@@ -48,7 +48,7 @@
   }
   #cn-app h1 em { font-style: italic; font-weight: 400; }
   #cn-app .hero-desc {
-    font-size: 19px;
+    font-size: clamp(19px, 1.4vw, 24px);
     color: #523852;
     line-height: 1.65;
     font-family: Helvetica, Arial, sans-serif;
@@ -64,7 +64,7 @@
   #cn-app .input-card {
     background: #f2e0d2;
     border-radius: 10px;
-    padding: 18px 24px;
+    padding: 22px 28px;
     box-shadow: 0 2px 12px rgba(80,56,82,0.08);
     border: 1.5px solid transparent;
     transition: box-shadow 0.2s, border-color 0.2s;
@@ -76,7 +76,7 @@
   #cn-app .row { display: flex; gap: 14px; }
   #cn-app .row .input-card { flex: 1; }
   #cn-app label {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #7a5f6a;
@@ -89,7 +89,7 @@
     border: none;
     color: #2e1228;
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     padding: 0;
     outline: none;
   }
@@ -100,11 +100,11 @@
     border: none;
     border-radius: 10px;
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 20px;
+    padding: 24px;
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 4px;
@@ -198,8 +198,8 @@
   @media (max-width: 768px) {
     #cn-app .hero { flex-direction: column; gap: 36px; }
     #cn-app .hero-left { width: 100%; }
-    #cn-app h1 { font-size: 42px; }
-    #cn-app .hero-desc { font-size: 17px; }
+    #cn-app h1 { font-size: clamp(38px, 9vw, 48px); }
+    #cn-app .hero-desc { font-size: clamp(16px, 4vw, 19px); }
     #cn-app .row { flex-direction: column; gap: 14px; }
     #cn-app #chart-footer { flex-direction: column; align-items: flex-start; }
     #cn-app #chart-info { text-align: left; }
