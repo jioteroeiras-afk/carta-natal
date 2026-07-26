@@ -713,8 +713,111 @@ function drawAspectTable(data) {
 }
 
 // ─── Geocoding ────────────────────────────────────────────────────────────────
+// Atlas de coordenadas fijas alineado con el estándar de software astrológico (ACS Atlas)
+// Formato: 'nombre normalizado': [lat, lng]
+const CITY_ATLAS = {
+  // Argentina
+  'buenos aires': [-34.6, -58.45],
+  'córdoba': [-31.4, -64.18],
+  'cordoba': [-31.4, -64.18],
+  'rosario': [-32.95, -60.67],
+  'mendoza': [-32.89, -68.85],
+  'tucumán': [-26.82, -65.22],
+  'tucuman': [-26.82, -65.22],
+  'la plata': [-34.92, -57.95],
+  'mar del plata': [-38.0, -57.55],
+  'salta': [-24.78, -65.42],
+  'santa fe': [-31.63, -60.7],
+  'san juan': [-31.53, -68.52],
+  'resistencia': [-27.45, -58.98],
+  'neuquén': [-38.95, -68.07],
+  'neuquen': [-38.95, -68.07],
+  'formosa': [-26.18, -58.18],
+  'san luis': [-33.3, -66.33],
+  'catamarca': [-28.47, -65.78],
+  'la rioja': [-29.42, -66.85],
+  'jujuy': [-24.18, -65.3],
+  'san salvador de jujuy': [-24.18, -65.3],
+  'posadas': [-27.37, -55.9],
+  'corrientes': [-27.48, -58.83],
+  'bahía blanca': [-38.72, -62.27],
+  'bahia blanca': [-38.72, -62.27],
+  'san miguel de tucumán': [-26.82, -65.22],
+  'comodoro rivadavia': [-45.87, -67.5],
+  'río gallegos': [-51.63, -69.22],
+  'rio gallegos': [-51.63, -69.22],
+  'ushuaia': [-54.8, -68.3],
+  // Uruguay
+  'montevideo': [-34.9, -56.17],
+  'punta del este': [-34.97, -54.95],
+  // Chile
+  'santiago': [-33.45, -70.67],
+  'valparaíso': [-33.05, -71.62],
+  'valparaiso': [-33.05, -71.62],
+  'concepción': [-36.82, -73.05],
+  'concepcion': [-36.82, -73.05],
+  // Bolivia
+  'la paz': [-16.5, -68.15],
+  'santa cruz': [-17.78, -63.18],
+  'cochabamba': [-17.38, -66.17],
+  // Paraguay
+  'asunción': [-25.28, -57.63],
+  'asuncion': [-25.28, -57.63],
+  // Perú
+  'lima': [-12.05, -77.05],
+  'arequipa': [-16.4, -71.53],
+  'cusco': [-13.53, -71.97],
+  // Ecuador
+  'quito': [-0.22, -78.52],
+  'guayaquil': [-2.17, -79.9],
+  // Colombia
+  'bogotá': [4.6, -74.08],
+  'bogota': [4.6, -74.08],
+  'medellín': [6.25, -75.57],
+  'medellin': [6.25, -75.57],
+  'cali': [3.43, -76.52],
+  // Venezuela
+  'caracas': [10.48, -66.87],
+  'maracaibo': [10.73, -71.63],
+  // Brasil
+  'são paulo': [-23.53, -46.63],
+  'sao paulo': [-23.53, -46.63],
+  'rio de janeiro': [-22.9, -43.17],
+  'brasília': [-15.78, -47.92],
+  'brasilia': [-15.78, -47.92],
+  'belo horizonte': [-19.92, -43.93],
+  'salvador': [-12.97, -38.48],
+  'porto alegre': [-30.05, -51.22],
+  'curitiba': [-25.42, -49.27],
+  'fortaleza': [-3.72, -38.53],
+  'recife': [-8.05, -34.9],
+  'manaus': [-3.12, -60.02],
+  // México
+  'ciudad de méxico': [19.43, -99.13],
+  'mexico': [19.43, -99.13],
+  'guadalajara': [20.67, -103.35],
+  'monterrey': [25.67, -100.3],
+  // Otros
+  'madrid': [40.4, -3.68],
+  'barcelona': [41.38, 2.18],
+  'nueva york': [40.72, -74.0],
+  'new york': [40.72, -74.0],
+  'london': [51.5, -0.12],
+  'londres': [51.5, -0.12],
+  'paris': [48.83, 2.33],
+  'parís': [48.83, 2.33],
+  'roma': [41.9, 12.48],
+  'berlin': [52.52, 13.4],
+  'berlín': [52.52, 13.4],
+};
+
 async function geocode(city) {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`;
+  const key = city.trim().toLowerCase();
+  if (CITY_ATLAS[key]) {
+    const [lat, lng] = CITY_ATLAS[key];
+    return { lat, lng };
+  }
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=3&featuretype=city&addressdetails=1`;
   const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
   const data = await res.json();
   if (!data.length) throw new Error(`No se encontró la ciudad: ${city}`);
