@@ -4,6 +4,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
   #cn-app, #cn-app * { box-sizing: border-box; margin: 0; padding: 0; }
   #cn-app {
+    width: 100%;
     background: #fce8e8;
     font-family: Helvetica, Arial, sans-serif;
     color: #2e1228;
@@ -17,20 +18,20 @@
   /* ── Two-column hero ── */
   #cn-app .hero {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1440px;
     display: flex;
     gap: 64px;
     align-items: center;
     margin-bottom: 64px;
   }
-  #cn-app .hero-left { flex: 0 0 42%; }
+  #cn-app .hero-left { flex: 0 0 42%; max-width: 560px; }
   #cn-app .hero-right { flex: 1; min-width: 0; }
 
   #cn-app .kicker {
     font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #503852;
+    color: #523852;
     font-weight: 700;
     margin-bottom: 18px;
     font-family: Helvetica, Arial, sans-serif;
@@ -38,7 +39,7 @@
   #cn-app h1 {
     font-family: 'Playfair Display', Georgia, serif;
     font-size: 52px;
-    color: #2e1228;
+    color: #523852;
     line-height: 1.1;
     margin-bottom: 22px;
     font-weight: 700;
@@ -48,7 +49,7 @@
   #cn-app h1 em { font-style: italic; font-weight: 400; }
   #cn-app .hero-desc {
     font-size: 17px;
-    color: #7a5f6a;
+    color: #523852;
     line-height: 1.65;
     font-family: Helvetica, Arial, sans-serif;
   }
@@ -181,7 +182,7 @@
   #cn-app .aspect-table { border-collapse: collapse; font-family: Helvetica, Arial, sans-serif; }
   #cn-app .aspect-table td { width: 40px; height: 16px; text-align: center; vertical-align: middle; border: 1.5px solid rgba(80,56,82,0.15); font-size: 14px; }
   #cn-app .aspect-table .at-label { background: transparent; border: none; color: #503852; font-weight: 700; font-size: 14px; padding: 0 4px; }
-  #cn-app .aspect-table .at-cell { background: #f7ebe4; }
+  #cn-app .aspect-table .at-cell { background: #f4e8df; }
   #cn-app .aspect-table .at-empty { background: #f7ebe4; }
 
   /* ── Elements / modality table ── */
@@ -190,7 +191,7 @@
   #cn-app .em-table th { font-size: 0.6rem; letter-spacing: 0.1em; color: #7a5f6a; text-transform: uppercase; font-weight: 700; padding: 4px 8px; border: none; background: transparent; }
   #cn-app .em-table th:first-child { text-align: left; min-width: 52px; }
   #cn-app .em-table td { border: 1.5px solid rgba(80,56,82,0.15); vertical-align: middle; padding: 6px 10px; font-size: 15px; letter-spacing: 0.04em; height: 36px; }
-  #cn-app .em-table .em-filled { background: #f7ebe4; }
+  #cn-app .em-table .em-filled { background: #f4e8df; }
   #cn-app .em-table .em-empty  { background: #f2e0d2; }
 
   /* ── Responsive ── */
@@ -207,9 +208,9 @@
 
 <div class="hero">
   <div class="hero-left">
-    <p class="kicker">✦ Carta Natal ✦</p>
-    <h1>Levantá tu carta <em>natal</em></h1>
-    <p class="hero-desc">Ingresá tus datos y fijate cómo estaba el cielo el día que naciste</p>
+    <p class="kicker">&#10022; Carta Natal &#10022;</p>
+    <h1>Levant&aacute; tu carta <em>natal</em></h1>
+    <p class="hero-desc">Ingres&aacute; tus datos y fijate c&oacute;mo estaba el cielo el d&iacute;a que naciste</p>
   </div>
   <div class="hero-right">
     <form id="natal-form">
@@ -233,7 +234,7 @@
       </div>
       <div id="error"></div>
       <button type="submit" id="submit-btn">Calcular carta natal</button>
-      <div id="loading">Calculando tu carta natal…</div>
+      <div id="loading">Calculando tu carta natal&#8230;</div>
     </form>
   </div>
 </div>
@@ -264,8 +265,15 @@ function signIndex(s) {
   if (i < 0) i = SIGNS.indexOf(s);
   return i;
 }
-const SIGN_SYMBOLS = ['♈︎','♉︎','♊︎','♋︎','♌︎','♍︎','♎︎','♏︎','♐︎','♑︎','♒︎','♓︎'];
-const SIGN_NAMES_ES = ['Aries','Tauro','Géminis','Cáncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis'];
+const SIGN_SYMBOLS = [
+  String.fromCharCode(0x2648,0xFE0E), String.fromCharCode(0x2649,0xFE0E),
+  String.fromCharCode(0x264A,0xFE0E), String.fromCharCode(0x264B,0xFE0E),
+  String.fromCharCode(0x264C,0xFE0E), String.fromCharCode(0x264D,0xFE0E),
+  String.fromCharCode(0x264E,0xFE0E), String.fromCharCode(0x264F,0xFE0E),
+  String.fromCharCode(0x2650,0xFE0E), String.fromCharCode(0x2651,0xFE0E),
+  String.fromCharCode(0x2652,0xFE0E), String.fromCharCode(0x2653,0xFE0E),
+];
+const SIGN_NAMES_ES = ['Aries','Tauro','G'+String.fromCharCode(233)+'minis','C'+String.fromCharCode(225)+'ncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis'];
 
 const ELEMENTS = {
   Aries:'fire', Leo:'fire', Sagittarius:'fire',
@@ -282,8 +290,8 @@ const ELEMENT_COLORS = {
 
 const PLANET_NAMES_ES = {
   Sun:'Sol', Moon:'Luna', Mercury:'Mercurio', Venus:'Venus',
-  Mars:'Marte', Jupiter:'Júpiter', Saturn:'Saturno',
-  Uranus:'Urano', Neptune:'Neptuno', Pluto:'Plutón', Chiron:'Quirón',
+  Mars:'Marte', Jupiter:'J'+String.fromCharCode(250)+'piter', Saturn:'Saturno',
+  Uranus:'Urano', Neptune:'Neptuno', Pluto:'Plut'+String.fromCharCode(243)+'n', Chiron:'Quir'+String.fromCharCode(243)+'n',
 };
 
 // SVG paths for planet symbols (100x100 viewBox, scaled inline)
@@ -316,7 +324,8 @@ const ASPECT_DASH = {
   sextile: '3,3',
 };
 const ASPECT_SYMBOLS = {
-  conjunction:'☌', opposition:'☍', trine:'△', square:'□', sextile:'⚹',
+  conjunction:String.fromCharCode(0x260C), opposition:String.fromCharCode(0x260D),
+  trine:String.fromCharCode(0x25B3), square:String.fromCharCode(0x25A1), sextile:String.fromCharCode(0x26B9),
 };
 
 // ─── Geometry ─────────────────────────────────────────────────────────────────
@@ -529,7 +538,7 @@ function drawChart(data) {
       'font-size':'8', fill:'#6a4050',
       'font-family':'Helvetica, Arial, sans-serif',
     });
-    degText.textContent = `${Math.floor(planet.position)}°`;
+    degText.textContent = `${Math.floor(planet.position)}${String.fromCharCode(176)}`;
 
     if (planet.retrograde) {
       const [rx,ry] = polar(R_SYM + 17, ang);
@@ -548,9 +557,9 @@ function drawChart(data) {
   const mcDeg  = Math.floor(data.mc.position);
   const mcSym  = SIGN_SYMBOLS[signIndex(data.mc.sign)] || '';
   const axes = [
-    { label:'ASC', sub:`${ascDeg}° ${ascSym}`, abs:ascAbs,               color:'#5a2030', bold:true },
+    { label:'ASC', sub:`${ascDeg}${String.fromCharCode(176)} ${ascSym}`, abs:ascAbs,               color:'#5a2030', bold:true },
     { label:'DSC', sub:null, abs:(ascAbs+180)%360,                        color:'#5a2030', bold:true },
-    { label:'MC',  sub:`${mcDeg}° ${mcSym}`,   abs:data.mc.abs_pos,      color:'#2a3a5a', bold:true },
+    { label:'MC',  sub:`${mcDeg}${String.fromCharCode(176)} ${mcSym}`,   abs:data.mc.abs_pos,      color:'#2a3a5a', bold:true },
     { label:'IC',  sub:null, abs:(data.mc.abs_pos+180)%360,               color:'#2a3a5a', bold:true },
   ];
   for (const a of axes) {
@@ -595,7 +604,7 @@ const MODALITY = {
   Taurus:'fixed',   Leo:'fixed',   Scorpio:'fixed',   Aquarius:'fixed',
   Gemini:'mutable', Virgo:'mutable', Sagittarius:'mutable', Pisces:'mutable',
 };
-const DAYS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DAYS_ES = ['Domingo','Lunes','Martes','Mi'+String.fromCharCode(233)+'rcoles','Jueves','Viernes','S'+String.fromCharCode(225)+'bado'];
 const HOUSE_ORDINALS = {
   First:1, Second:2, Third:3, Fourth:4, Fifth:5, Sixth:6,
   Seventh:7, Eighth:8, Ninth:9, Tenth:10, Eleventh:11, Twelfth:12,
@@ -662,8 +671,10 @@ function drawElementsTable(data) {
 
 // ─── Aspect table ─────────────────────────────────────────────────────────────
 const PLANET_UNICODE = {
-  Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂',
-  Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷',
+  Sun:String.fromCharCode(0x2609), Moon:String.fromCharCode(0x263D), Mercury:String.fromCharCode(0x263F),
+  Venus:String.fromCharCode(0x2640), Mars:String.fromCharCode(0x2642),
+  Jupiter:String.fromCharCode(0x2643), Saturn:String.fromCharCode(0x2644), Uranus:String.fromCharCode(0x2645),
+  Neptune:String.fromCharCode(0x2646), Pluto:String.fromCharCode(0x2647), Chiron:String.fromCharCode(0x26B7),
 };
 
 function drawAspectTable(data) {
@@ -693,9 +704,9 @@ function drawAspectTable(data) {
       if (asp) {
         const aspName = asp.aspect.toLowerCase();
         const col = ASPECT_COLORS[aspName];
-        const sym = ASPECT_SYMBOLS[aspName] || '·';
+        const sym = ASPECT_SYMBOLS[aspName] || String.fromCharCode(183);
         const orb = asp.orbit != null ? Math.abs(asp.orbit).toFixed(1) : '';
-        html += `<td class="at-cell" style="color:${col};font-weight:700" title="${PLANET_NAMES_ES[p1.name]||p1.name} / ${PLANET_NAMES_ES[p2.name]||p2.name}: ${asp.aspect} ${orb}°">${sym}</td>`;
+        html += `<td class="at-cell" style="color:${col};font-weight:700" title="${PLANET_NAMES_ES[p1.name]||p1.name} / ${PLANET_NAMES_ES[p2.name]||p2.name}: ${asp.aspect} ${orb}${String.fromCharCode(176)}">${sym}</td>`;
       } else {
         html += '<td class="at-empty"></td>';
       }
@@ -715,14 +726,16 @@ function drawAspectTable(data) {
 // ─── Geocoding ────────────────────────────────────────────────────────────────
 // Atlas de coordenadas fijas alineado con el estándar de software astrológico (ACS Atlas)
 // Formato: 'nombre normalizado': [lat, lng]
+const A1 = String.fromCharCode(225), E1 = String.fromCharCode(233), I1 = String.fromCharCode(237),
+      O1 = String.fromCharCode(243), U1 = String.fromCharCode(250), N3 = String.fromCharCode(227);
 const CITY_ATLAS = {
   // Argentina
   'buenos aires': [-34.6, -58.45],
-  'córdoba': [-31.4, -64.18],
+  ['c'+O1+'rdoba']: [-31.4, -64.18],
   'cordoba': [-31.4, -64.18],
   'rosario': [-32.95, -60.67],
   'mendoza': [-32.89, -68.85],
-  'tucumán': [-26.82, -65.22],
+  ['tucum'+A1+'n']: [-26.82, -65.22],
   'tucuman': [-26.82, -65.22],
   'la plata': [-34.92, -57.95],
   'mar del plata': [-38.0, -57.55],
@@ -730,7 +743,7 @@ const CITY_ATLAS = {
   'santa fe': [-31.63, -60.7],
   'san juan': [-31.53, -68.52],
   'resistencia': [-27.45, -58.98],
-  'neuquén': [-38.95, -68.07],
+  ['neuqu'+E1+'n']: [-38.95, -68.07],
   'neuquen': [-38.95, -68.07],
   'formosa': [-26.18, -58.18],
   'san luis': [-33.3, -66.33],
@@ -740,11 +753,11 @@ const CITY_ATLAS = {
   'san salvador de jujuy': [-24.18, -65.3],
   'posadas': [-27.37, -55.9],
   'corrientes': [-27.48, -58.83],
-  'bahía blanca': [-38.72, -62.27],
+  ['bah'+I1+'a blanca']: [-38.72, -62.27],
   'bahia blanca': [-38.72, -62.27],
-  'san miguel de tucumán': [-26.82, -65.22],
+  ['san miguel de tucum'+A1+'n']: [-26.82, -65.22],
   'comodoro rivadavia': [-45.87, -67.5],
-  'río gallegos': [-51.63, -69.22],
+  ['r'+I1+'o gallegos']: [-51.63, -69.22],
   'rio gallegos': [-51.63, -69.22],
   'ushuaia': [-54.8, -68.3],
   // Uruguay
@@ -752,16 +765,16 @@ const CITY_ATLAS = {
   'punta del este': [-34.97, -54.95],
   // Chile
   'santiago': [-33.45, -70.67],
-  'valparaíso': [-33.05, -71.62],
+  ['valpara'+I1+'so']: [-33.05, -71.62],
   'valparaiso': [-33.05, -71.62],
-  'concepción': [-36.82, -73.05],
+  ['concepci'+O1+'n']: [-36.82, -73.05],
   'concepcion': [-36.82, -73.05],
   // Bolivia
   'la paz': [-16.5, -68.15],
   'santa cruz': [-17.78, -63.18],
   'cochabamba': [-17.38, -66.17],
   // Paraguay
-  'asunción': [-25.28, -57.63],
+  ['asunci'+O1+'n']: [-25.28, -57.63],
   'asuncion': [-25.28, -57.63],
   // Perú
   'lima': [-12.05, -77.05],
@@ -771,19 +784,19 @@ const CITY_ATLAS = {
   'quito': [-0.22, -78.52],
   'guayaquil': [-2.17, -79.9],
   // Colombia
-  'bogotá': [4.6, -74.08],
+  ['bogot'+A1]: [4.6, -74.08],
   'bogota': [4.6, -74.08],
-  'medellín': [6.25, -75.57],
+  ['medell'+I1+'n']: [6.25, -75.57],
   'medellin': [6.25, -75.57],
   'cali': [3.43, -76.52],
   // Venezuela
   'caracas': [10.48, -66.87],
   'maracaibo': [10.73, -71.63],
   // Brasil
-  'são paulo': [-23.53, -46.63],
+  ['s'+N3+'o paulo']: [-23.53, -46.63],
   'sao paulo': [-23.53, -46.63],
   'rio de janeiro': [-22.9, -43.17],
-  'brasília': [-15.78, -47.92],
+  ['bras'+I1+'lia']: [-15.78, -47.92],
   'brasilia': [-15.78, -47.92],
   'belo horizonte': [-19.92, -43.93],
   'salvador': [-12.97, -38.48],
@@ -793,7 +806,7 @@ const CITY_ATLAS = {
   'recife': [-8.05, -34.9],
   'manaus': [-3.12, -60.02],
   // México
-  'ciudad de méxico': [19.43, -99.13],
+  ['ciudad de m'+E1+'xico']: [19.43, -99.13],
   'mexico': [19.43, -99.13],
   'guadalajara': [20.67, -103.35],
   'monterrey': [25.67, -100.3],
@@ -805,10 +818,10 @@ const CITY_ATLAS = {
   'london': [51.5, -0.12],
   'londres': [51.5, -0.12],
   'paris': [48.83, 2.33],
-  'parís': [48.83, 2.33],
+  ['par'+I1+'s']: [48.83, 2.33],
   'roma': [41.9, 12.48],
   'berlin': [52.52, 13.4],
-  'berlín': [52.52, 13.4],
+  ['berl'+I1+'n']: [52.52, 13.4],
 };
 
 async function geocode(city) {
@@ -820,7 +833,7 @@ async function geocode(city) {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=3&featuretype=city&addressdetails=1`;
   const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
   const data = await res.json();
-  if (!data.length) throw new Error(`No se encontró la ciudad: ${city}`);
+  if (!data.length) throw new Error(`No se encontr${String.fromCharCode(243)} la ciudad: ${city}`);
   return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
 }
 
@@ -843,15 +856,15 @@ document.getElementById('natal-form').addEventListener('submit', async (e) => {
     const timeVal = document.getElementById('birthtime').value || '12:00';
     const city = document.getElementById('city').value.trim();
 
-    if (!dateVal) throw new Error('Por favor ingresá la fecha de nacimiento.');
+    if (!dateVal) throw new Error('Por favor ingres'+String.fromCharCode(225)+' la fecha de nacimiento.');
 
     const [year, month, day] = dateVal.split('-').map(Number);
     const [hour, minute] = timeVal.split(':').map(Number);
 
-    loading.textContent = 'Buscando coordenadas de la ciudad…';
+    loading.textContent = 'Buscando coordenadas de la ciudad'+String.fromCharCode(8230);
     const { lat, lng } = await geocode(city);
 
-    loading.textContent = 'Calculando carta natal… (la primera vez puede tardar hasta 1 minuto)';
+    loading.textContent = 'Calculando carta natal'+String.fromCharCode(8230)+' (la primera vez puede tardar hasta 1 minuto)';
     const resp = await fetch(`${SERVER}/natal`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -867,8 +880,9 @@ document.getElementById('natal-form').addEventListener('submit', async (e) => {
 
     document.getElementById('chart-title').textContent = name.toUpperCase();
     const dateFormatted = `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`;
+    const MID = String.fromCharCode(183), DEG = String.fromCharCode(176);
     document.getElementById('chart-subtitle').textContent =
-      `${dateFormatted} · ${timeVal} · ${city} · ASC ${SIGN_NAMES_ES[signIndex(data.ascendant.sign)] || '?'} ${Math.floor(data.ascendant.position)}°`;
+      `${dateFormatted} ${MID} ${timeVal} ${MID} ${city} ${MID} ASC ${SIGN_NAMES_ES[signIndex(data.ascendant.sign)] || '?'} ${Math.floor(data.ascendant.position)}${DEG}`;
 
     const dayOfWeek = DAYS_ES[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
 
@@ -885,7 +899,7 @@ document.getElementById('natal-form').addEventListener('submit', async (e) => {
   } finally {
     btn.disabled = false;
     loading.style.display = 'none';
-    loading.textContent = 'Calculando tu carta natal…';
+    loading.textContent = 'Calculando tu carta natal'+String.fromCharCode(8230);
   }
 });
 
